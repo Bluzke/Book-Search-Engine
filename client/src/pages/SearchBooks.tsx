@@ -10,8 +10,8 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
+import { saveBook, searchGoogleBooks } from '../utils/queries';
+import { saveBookIds, getSavedBookIds } from '../utils/mutations';
 import type { Book } from '../models/Book';
 import type { GoogleAPIBook } from '../models/GoogleAPIBook';
 
