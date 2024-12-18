@@ -25,11 +25,6 @@ token: String
 user: User
 }
 
-# Query Type
-type Query {
-me: User
-}
-
 # BookInput for saveBook
 input BookInput {
 bookId: ID!
@@ -41,6 +36,10 @@ link: String
 
 }
 
+# Query Type
+type Query {
+me: User
+}
 
 # Mutation Type
 type Mutation {

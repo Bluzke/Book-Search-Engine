@@ -17,31 +17,20 @@ interface LoginUserArgs {
     username?: string;
   }
 
-interface UserArgs {
-  username: string;
-}
-
 interface SaveBookArgs {
-    input: {
+    bookInput: {
       bookId: string;
       description: string;
     };
   }
 
   interface RemoveBookArgs {
-    userId: string
     bookId: string;
   }
   
 
   const resolvers = {
     Query: {
-      users: async () => {
-        return User.find();
-      },
-      user: async (_parent: any, { username }: UserArgs) => {
-        return User.findOne({ username });
-      },
       // Query to get the logged-in user's data
       me: async (_parent: any, _args: any, context: any) => {
         if (context.user) {
@@ -51,9 +40,11 @@ interface SaveBookArgs {
       },
     },
   Mutation: {
-    addUser: async (_parent: any, { input }: AddUserArgs) => {
+    addUser: async (_parent: any,  args : AddUserArgs) => {
+      console.log("HELLOOO")
       // Create a new user with the provided username, email, and password
-      const user = await User.create({ ...input });
+      const user = await User.create(args);
+      console.log(user)
     
       // Sign a token with the user's information
       const token = signToken(user.username, user.email, user._id);
@@ -85,29 +76,28 @@ interface SaveBookArgs {
       // Return the token and the user
       return { token, user };
     },
-    saveBook: async (_parent: any, { input }: SaveBookArgs, context: any) => {
+    saveBook: async (_parent: any, { bookInput }: SaveBookArgs, context: any) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in!');
       }
       const updatedUser = await User.findOneAndUpdate(
         { _id: context.user._id },
         {
-          $addToSet: { savedBooks: { ...input } }, // Assuming `savedBooks` is an array in the user schema
+          $addToSet: { savedBooks: { ...bookInput } }, // Assuming `savedBooks` is an array in the user schema
         },
         { new: true, runValidators: true }
       );
       return updatedUser;
     },
 
-    removeComment: async (_parent: any, { userId, bookId }: RemoveBookArgs, context: any) => {
+    removeBook: async (_parent: any, { bookId }: RemoveBookArgs, context: any) => {
       if (context.user) {
         return User.findOneAndUpdate(
-          { _id: userId },
+          { _id: context.user._id },
           {
             $pull: {
-              comments: {
-                _id: bookId,
-                commentAuthor: context.user.username,
+              savedBooks: {
+                 bookId
               },
             },
           },
