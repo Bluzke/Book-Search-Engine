@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useQuery } from '@apollo/client';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
@@ -7,25 +6,14 @@ import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
-import type { User } from '../models/User';
+// import type { User } from '../models/User';
 
 const SavedBooks = () => {
 
   const { loading, data } = useQuery(GET_ME);
   const [deleteBook] = useMutation(REMOVE_BOOK);
 
-  const [userData, setUserData] = useState<User>({
-    username: '',
-    email: '',
-    password: '',
-    savedBooks: [],
-  });
-
-
-  // use this to determine if `useEffect()` hook needs to run again
-  const userDataLength = Object.keys(userData).length;
-
-
+  const userData = data?.me || {};
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId: string) => {
@@ -47,7 +35,7 @@ const SavedBooks = () => {
   };
 
   // if data isn't here yet, say so
-  if (!userDataLength) {
+  if (loading) {
     return <h2>LOADING...</h2>;
   }
 
@@ -64,14 +52,14 @@ const SavedBooks = () => {
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.savedBooks.length
+          {userData.savedBooks?.length
             ? `Viewing ${userData.savedBooks.length} saved ${
                 userData.savedBooks.length === 1 ? 'book' : 'books'
               }:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {userData.savedBooks?.map((book: any) => {
             return (
               <Col md='4'>
                 <Card key={book.bookId} border='dark'>

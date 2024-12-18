@@ -10,7 +10,7 @@ import type { User } from '../models/User';
 // biome-ignore lint/correctness/noEmptyPattern: <explanation>
 const SignupForm = ({}: { handleModalClose: () => void }) => {
 
-  const [addUser] = useMutation(ADD_USER);
+  const [addUser, { error }] = useMutation(ADD_USER);
 
 
   // set initial form state
@@ -43,6 +43,7 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
       Auth.login(data.addUser.token);
     } catch (e) {
       console.error(e);
+      setShowAlert(true);
     }
 
     setUserFormData({
